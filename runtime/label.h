@@ -7,7 +7,7 @@
 #ifndef	LABEL_H
 #define	LABEL_H
 
-#include	"list.h"
+#include	"dlist.h"
 
 typedef struct s_label
 {
