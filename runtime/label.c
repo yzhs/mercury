@@ -28,7 +28,7 @@ void init_entries(void)
 	init_table(entry_addr_table);
 }
 
-Label *makeentry(const char *name, Code *addr)
+Label *insert_entry(const char *name, Code *addr)
 {
 	Label	*entry;
 
