@@ -406,6 +406,8 @@ vn__new_if_node(TargetAddr, Livemap, Ctrlmap0, Ctrl0, VnTables0, VnTables,
 			VnTables0, VnTables1, Liveset0, Liveset1,
 			FlushEntry0, FlushEntry1,
 			LabelNo0, LabelNoPrime, ParallelsPrime),
+		vn__record_compulsory_lvals(VnTables1, Liveset1, Liveset2,
+			FlushEntry1, FlushEntry2),
 		(
 			Prev is Ctrl0 - 1,
 			map__search(Ctrlmap0, Prev, PrevInstr),
@@ -416,14 +418,14 @@ vn__new_if_node(TargetAddr, Livemap, Ctrlmap0, Ctrl0, VnTables0, VnTables,
 				Vnlivelist),
 			vn__record_livevnlvals(Vnlivelist,
 				VnTables1, VnTables,
-				Liveset1, Liveset,
-				FlushEntry1, FlushEntry),
+				Liveset2, Liveset,
+				FlushEntry2, FlushEntry),
 			LabelNo = LabelNo0,
 			Parallels = []
 		;
 			VnTables = VnTables1,
-			Liveset = Liveset1,
-			FlushEntry = FlushEntry1,
+			Liveset = Liveset2,
+			FlushEntry = FlushEntry2,
 			LabelNo = LabelNoPrime,
 			Parallels = ParallelsPrime
 		)
@@ -664,7 +666,8 @@ vn__record_compulsory_lval_list([Vnlval - Vn | Lval_vn_list],
 
 vn__find_cheaper_copies(Lval, Vn, VnTables, ParEntries) :-
 	vn__lval_cost(Lval, LvalCost),
-	vn__lookup_current_locs(Vn, CurVnlvals, VnTables),
+	vn__lookup_current_locs(Vn, CurVnlvals, "vn__find_cheaper_copies",
+		VnTables),
 	vn__find_cheaper_copies_2(CurVnlvals, LvalCost, CheapRvals),
 	( CheapRvals = [] ->
 		ParEntries = []

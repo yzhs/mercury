@@ -113,7 +113,8 @@
 		;	tag_switch_size
 		;	middle_rec
 		;	inlining
-		;	common_subexpression
+		;	common_struct
+		;	common_goal
 		;	c_optimize
 		;	debug
 		;	grade
@@ -224,12 +225,13 @@ option_defaults_2(optimization_option, [
 	tag_switch_size		-	int(8),
 	middle_rec		-	bool(yes),
 	inlining		-	bool(yes),
-	common_subexpression	-	bool(no),
+	common_struct		-	bool(no),
+	common_goal		-	bool(no),
 	procs_per_c_function	-	int(1)
 ]).
 option_defaults_2(miscellaneous_option, [
 		% Miscellaneous Options
-	trad_passes		-	bool(no),
+	trad_passes		-	bool(yes),
 	builtin_module		-	string("mercury_builtin"),
 	heap_space		-	int(0),
 	search_directories 	-	accumulating(["."]),
@@ -341,7 +343,8 @@ long_option("string-switch_size",	string_switch_size).
 long_option("tag-switch-size",		tag_switch_size).
 long_option("middle-rec",		middle_rec).
 long_option("inlining",			inlining).
-long_option("common-subexpression",	common_subexpression).
+long_option("common-struct",		common_struct).
+long_option("common-goal",		common_goal).
 long_option("procs-per-c-function",	procs_per_c_function).
 long_option("procs-per-C-function",	procs_per_c_function).
 
@@ -506,8 +509,10 @@ options_help -->
 	io__write_string("\t\tDisable the middle recursion optimization.\n"),
 	io__write_string("\t--no-inlining\n"),
 	io__write_string("\t\tDisable the inlining of simple procedures.\n"),
-	io__write_string("\t--no-common-subexpression\n"),
-	io__write_string("\t\tDisable common subexpression optimisation.\n"),
+	io__write_string("\t--common-struct\n"),
+	io__write_string("\t\tEnable optimisation of common term structures.\n"),
+	io__write_string("\t--common-goal\n"),
+	io__write_string("\t\tEnable optimisation of common goal.\n"),
 	io__write_string("\t--procs-per-c-function <n>\n"),
 	io__write_string("\t\tDon't put the code for more than <n> Mercury\n"),
 	io__write_string("\t\tprocedures in a single C function.  The default\n"),

@@ -1405,19 +1405,23 @@ mercury_compile__detect_switches(HLDS0, HLDS) -->
 :- mode mercury_compile__detect_cse(in, out, di, uo) is det.
 
 mercury_compile__detect_cse(HLDS0, HLDS) -->
-	{ HLDS = HLDS0 }.
-	% globals__io_lookup_bool_option(verbose, Verbose),
-	% maybe_write_string(Verbose, "% Detecting common deconstructions..."),
-	% maybe_flush_output(Verbose),
-	% detect_cse(HLDS0, HLDS),
-	% maybe_write_string(Verbose, " done.\n").
+	globals__io_lookup_bool_option(common_goal, CommonGoal),
+	( { CommonGoal = yes } ->
+		globals__io_lookup_bool_option(verbose, Verbose),
+		maybe_write_string(Verbose, "% Detecting common deconstructions..."),
+		maybe_flush_output(Verbose),
+		detect_cse(HLDS0, HLDS),
+		maybe_write_string(Verbose, " done.\n")
+	;
+		{ HLDS = HLDS0 }
+	).
 
 :- pred mercury_compile__maybe_detect_common_struct(module_info, module_info,
 	io__state, io__state).
 :- mode mercury_compile__maybe_detect_common_struct(in, out, di, uo) is det.
 
 mercury_compile__maybe_detect_common_struct(HLDS0, HLDS) -->
-	globals__io_lookup_bool_option(common_subexpression, CommonStruct),
+	globals__io_lookup_bool_option(common_struct, CommonStruct),
 	( { CommonStruct = yes } ->
 		globals__io_lookup_bool_option(verbose, Verbose),
 		maybe_write_string(Verbose, "% Detecting common structures..."),
@@ -1788,7 +1792,7 @@ mercury_compile__backend_pass_by_preds_2([PredId | PredIds], ModuleInfo0,
 			[]
 		)
 	),
-	mercury_compile__backend_pass_by_preds_2([PredId | PredIds],
+	mercury_compile__backend_pass_by_preds_2(PredIds,
 		ModuleInfo1, ModuleInfo, Code2),
 	{ list__append(Code1, Code2, Code) }.
 

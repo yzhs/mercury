@@ -284,11 +284,14 @@ det_infer_goal(Goal0 - GoalInfo0, InstMap0, MiscInfo,
 		;
 			error("transformation of semidet disj to ite changes its determinism")
 		)
-	;
-		Detism = failure
-	->
-		Goal = disj([]),
-		GoalInfo1 = GoalInfo0
+%	;
+%		It would nice to do this, but without further changes
+%		it screws up delta-instantiations and liveness.
+%
+%		Detism = failure
+%	->
+%		Goal = disj([]),
+%		GoalInfo1 = GoalInfo0
 	;
 		Goal = Goal1,
 		GoalInfo1 = GoalInfo0

@@ -285,24 +285,23 @@
 
 %-----------------------------------------------------------------------------%
 
-	% The following code is very straightforward and
-	% unremarkable.  The only thing of note is that is
-	% uses the logical io library, and that it uses DCGs
-	% to avoid having to explicitly shuffle the state-of-the-world
-	% arguments around all the time, as discussed in my hons thesis. -fjh.
-
-output_c_file(c_file(Name, Modules)) -->
-	{ string__append(Name, ".c", FileName) },
+output_c_file(c_file(BaseName, Modules)) -->
+	{ string__append(BaseName, ".c", FileName) },
 	io__tell(FileName, Result),
 	(
 		{ Result = ok }
 	->
 		io__write_string("/* this code automatically generated - do not edit.*/\n\n"),
 		io__write_string("/*\n"),
-		output_c_module_init_list(Modules),
+		io__write_string("INIT "),
+		output_init_name(BaseName),
+		io__write_string("\n"),
+		io__write_string("ENDINIT\n"),
 		io__write_string("*/\n\n"),
 		io__write_string("#include ""imp.h""\n"),
 		output_c_module_list(Modules),
+		io__write_string("\n"),
+		output_c_module_init_list(BaseName, Modules),
 		io__told
 	;
 		io__progname_base("llds.m", ProgName),
@@ -314,16 +313,89 @@ output_c_file(c_file(Name, Modules)) -->
 		io__set_exit_status(1)
 	).
 
-:- pred output_c_module_init_list(list(c_module), io__state, io__state).
-:- mode output_c_module_init_list(in, di, uo) is det.
+:- pred output_c_module_init_list(string, list(c_module), io__state, io__state).
+:- mode output_c_module_init_list(in, in, di, uo) is det.
 
-output_c_module_init_list([]) -->
-	io__write_string("ENDINIT\n").
-output_c_module_init_list([c_module(Name, _) | Ms]) -->
-	io__write_string("INIT "),
-	io__write_string(Name),
-	io__write_string("\n"),
-	output_c_module_init_list(Ms).
+output_c_module_init_list(BaseName, Modules) -->
+	io__write_string("static void "),
+	output_bunch_name(BaseName, 0),
+	io__write_string("(void)\n"),
+	io__write_string("{\n"),
+	output_c_module_init_list_2(Modules, BaseName, 0, 40, 0, InitFuncs),
+	io__write_string("}\n\n"),
+	io__write_string("/* suppress gcc warning */\n"),
+	io__write_string("extern void "),
+	output_init_name(BaseName),
+	io__write_string("(void);\n"),
+	io__write_string("void "),
+	output_init_name(BaseName),
+	io__write_string("(void)\n"),
+	io__write_string("{\n"),
+	output_c_module_init_list_3(0, BaseName, InitFuncs),
+	io__write_string("}\n").
+
+:- pred output_c_module_init_list_2(list(c_module), string, int, int, int, int,
+	io__state, io__state).
+:- mode output_c_module_init_list_2(in, in, in, in, in, out, di, uo) is det.
+
+output_c_module_init_list_2([], _, _, _, InitFunc, InitFunc) --> [].
+output_c_module_init_list_2([c_module(ModuleName, _) | Ms], BaseName,
+		Calls0, MaxCalls, InitFunc0, InitFunc) -->
+	( { Calls0 > MaxCalls } ->
+		io__write_string("}\n\n"),
+		{ InitFunc1 is InitFunc0 + 1 },
+		io__write_string("static void "),
+		output_bunch_name(BaseName, InitFunc1),
+		io__write_string("(void)\n"),
+		io__write_string("{\n"),
+		{ Calls1 = 1 }
+	;
+		{ InitFunc1 = InitFunc0 },
+		{ Calls1 is Calls0 + 1 }
+	),
+	io__write_string("\t"),
+	output_module_name(ModuleName),
+	io__write_string("();\n"),
+	output_c_module_init_list_2(Ms, BaseName,
+		Calls1, MaxCalls, InitFunc1, InitFunc).
+
+:- pred output_c_module_init_list_3(int, string, int, io__state, io__state).
+:- mode output_c_module_init_list_3(in, in, in, di, uo) is det.
+
+output_c_module_init_list_3(InitFunc0, BaseName, MaxInitFunc) -->
+	( { InitFunc0 > MaxInitFunc } ->
+		[]
+	;
+		io__write_string("\t"),
+		output_bunch_name(BaseName, InitFunc0),
+		io__write_string("();\n"),
+		{ InitFunc1 is InitFunc0 + 1},
+		output_c_module_init_list_3(InitFunc1, BaseName, MaxInitFunc)
+	).
+
+:- pred output_init_name(string, io__state, io__state).
+:- mode output_init_name(in, di, uo) is det.
+
+output_init_name(BaseName) -->
+	io__write_string("mercury__"),
+	io__write_string(BaseName),
+	io__write_string("__init").
+
+:- pred output_bunch_name(string, int, io__state, io__state).
+:- mode output_bunch_name(in, in, di, uo) is det.
+
+output_bunch_name(BaseName, Number) -->
+	io__write_string("mercury__"),
+	io__write_string(BaseName),
+	io__write_string("_bunch_"),
+	io__write_int(Number).
+
+:- pred output_module_name(string, io__state, io__state).
+:- mode output_module_name(in, di, uo) is det.
+
+output_module_name(ModuleName) -->
+	io__write_string("mercury__"),
+	io__write_string(ModuleName).
 
 :- pred output_c_module_list(list(c_module), io__state, io__state).
 :- mode output_c_module_list(in, di, uo) is det.
@@ -336,13 +408,13 @@ output_c_module_list([M|Ms]) -->
 :- pred output_c_module(c_module, io__state, io__state).
 :- mode output_c_module(in, di, uo) is det.
 
-output_c_module(c_module(Name, Procedures)) -->
+output_c_module(c_module(ModuleName, Procedures)) -->
 	{ gather_labels(Procedures, Labels) },
 	io__write_string("\n"),
 	output_c_label_decl_list(Labels),
 	io__write_string("\n"),
-	io__write_string("BEGIN_MODULE(mercury__"),
-	io__write_string(Name),
+	io__write_string("BEGIN_MODULE("),
+	output_module_name(ModuleName),
 	io__write_string(")\n"),
 	output_c_label_init_list(Labels),
 	io__write_string("BEGIN_CODE\n"),
@@ -433,6 +505,12 @@ output_c_label_init(Label, ProcPerFunc) -->
 		output_label(Label),
 		io__write_string(");\n")
 	).
+
+	% The following code is very straightforward and
+	% unremarkable.  The only thing of note is that is
+	% uses the logical io library, and that it uses DCGs
+	% to avoid having to explicitly shuffle the state-of-the-world
+	% arguments around all the time, as discussed in my hons thesis. -fjh.
 
 :- pred output_c_procedure_list(list(c_procedure), io__state, io__state).
 :- mode output_c_procedure_list(in, di, uo) is det.
