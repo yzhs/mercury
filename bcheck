@@ -7,6 +7,7 @@ usage="bcheck [-jN] [-o filename]"
 jfactor=""
 mmake_opts="-k"
 outfile=""
+
 while getopts j:m:o: flag
 do
 	case $flag in
@@ -68,6 +69,13 @@ else
 	exit 1
 fi
 
+MMAKE_VPATH=.
+export MMAKE_VPATH
+MMAKE_VARS=../scripts/Mmake.vars
+export MMAKE_VARS
+MMAKE_RULES=../scripts/Mmake.rules
+export MMAKE_RULES
+
 if (cd stage2/library ; mmake $mmake_opts $jfactor ints)
 then
 	echo "building of stage 2 library ints successful"
@@ -76,7 +84,7 @@ else
 	exit 1
 fi
 
-if (cd stage2 ; mmake $mmake_opts $jfactor library)
+if (cd stage2/library ; mmake $mmake_opts $jfactor libmercury)
 then
 	echo "building of stage 2 library successful"
 else
@@ -91,6 +99,18 @@ else
 	echo "building of stage 2 compiler ints not successful"
 	exit 1
 fi
+
+if (cd stage2/compiler ; mmake $mmake_opts $jfactor mercury_compile)
+then
+	echo "building of stage 2 compiler successful"
+else
+	echo "building of stage 2 compiler not successful"
+	exit 1
+fi
+
+unset MMAKE_VPATH
+unset MMAKE_VARS
+unset MMAKE_RULES
 
 if (cd stage2 ; mmake $mmake_opts $jfactor all)
 then
@@ -130,6 +150,13 @@ else
 	exit 1
 fi
 
+MMAKE_VPATH=.
+export MMAKE_VPATH
+MMAKE_VARS=../scripts/Mmake.vars
+export MMAKE_VARS
+MMAKE_RULES=../scripts/Mmake.rules
+export MMAKE_RULES
+
 if (cd stage3/library ; mmake $mmake_opts $jfactor ints)
 then
 	echo "building of stage 3 library ints successful"
@@ -138,7 +165,7 @@ else
 	exit 1
 fi
 
-if (cd stage3 ; mmake $mmake_opts $jfactor library)
+if (cd stage3/library ; mmake $mmake_opts $jfactor libmercury)
 then
 	echo "building of stage 3 library successful"
 else
@@ -153,6 +180,18 @@ else
 	echo "building of stage 3 compiler ints not successful"
 	exit 1
 fi
+
+if (cd stage3/compiler ; mmake $mmake_opts $jfactor mercury_compile)
+then
+	echo "building of stage 3 compiler successful"
+else
+	echo "building of stage 3 compiler not successful"
+	exit 1
+fi
+
+unset MMAKE_VPATH
+unset MMAKE_VARS
+unset MMAKE_RULES
 
 if (cd stage3 ; mmake $mmake_opts $jfactor all)
 then
