@@ -74,7 +74,7 @@
 		;	dump_hlds
 		;	verbose_dump_hlds
 		;	generate_code
-		;	compile_to_c
+		;	compile_to_c		% obsolete, ignored
 		;	compile
 		;	link
 		;	line_numbers
@@ -119,6 +119,7 @@
 		;	grade
 		;	procs_per_c_function
 	% Miscellaneous Options
+		;	trad_passes
 		;	builtin_module
 		;	heap_space
 		;	search_directories
@@ -228,6 +229,7 @@ option_defaults_2(optimization_option, [
 ]).
 option_defaults_2(miscellaneous_option, [
 		% Miscellaneous Options
+	trad_passes		-	bool(no),
 	builtin_module		-	string("mercury_builtin"),
 	heap_space		-	int(0),
 	search_directories 	-	accumulating(["."]),
@@ -274,6 +276,7 @@ long_option("statistics",		statistics).
 long_option("dump-hlds",		dump_hlds).
 long_option("verbose-dump-hlds",	verbose_dump_hlds).
 long_option("generate-code",		generate_code).
+long_option("trad-passes",		trad_passes).
 long_option("builtin-module",		builtin_module).
 long_option("make-call-graph",		make_call_graph).
 long_option("make-interface",		make_interface).
@@ -304,7 +307,6 @@ long_option("reclaim-heap-on-nondet-failure",
 long_option("num-tag-bits",		num_tag_bits).
 long_option("gc",			gc).
 long_option("garbage-collection",	gc).
-long_option("compile-to-C",		compile_to_c).
 long_option("compile-to-c",		compile_to_c).
 long_option("compile",			compile).
 long_option("cc",			cc).
@@ -404,12 +406,9 @@ options_help -->
 	io__write_string("\t\tWith --dump-hlds, dumps some additional info.\n"),
 	io__write_string("\t-g, --generate-code\n"),
 	io__write_string("\t\tGenerate .mod code in `<module>.mod'.\n"),
-	io__write_string("\t--compile-to-C\n"),
-	io__write_string("\t\tConvert the generated .mod file to a .c file.\n"),
-	io__write_string("\t\tThis implies --generate-code.\n"),
 	io__write_string("\t-c, --compile\n"),
 	io__write_string("\t\tInvoke the C compiler on the generated .c file.\n"),
-	io__write_string("\t\tThis implies --compile-to-C.\n"),
+	io__write_string("\t\tThis implies --generate-code.\n"),
 	io__write_string("\t--link\n"),
 	io__write_string("\t\tLink the named modules to produce an executable.\n"),
 	io__write_string("\t\tThis implies --compile.\n"),
@@ -522,6 +521,8 @@ options_help -->
 	io__write_string("\t\tDon't enable the C compiler's optimizations.\n"),
 
 	io__write_string("\nMiscellaneous Options:\n"),
+	io__write_string("\t--trad_passes\n"),
+	io__write_string("\t\tUse a traditional two-pass compilation scheme.\n"),
 	io__write_string("\t-H <n>, --heap-space <n>\n"),
 	io__write_string("\t\tPre-allocate <n> kilobytes of heap space.\n"),
 	io__write_string("\t\tUse this option to avoid NU-Prolog's\n"),

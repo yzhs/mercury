@@ -641,10 +641,12 @@ vn__record_compulsory_lvals(VnTables, Livevals0, Livevals,
 vn__record_compulsory_lval_list([], Livevals, Livevals, FlushEntry, FlushEntry).
 vn__record_compulsory_lval_list([Vnlval - Vn | Lval_vn_list],
 		Livevals0, Livevals, FlushEntry0, FlushEntry) :-
-	( Vnlval = vn_field(_, _, _) ->
-		map__set(FlushEntry0, Vnlval, Vn, FlushEntry1),
-		set__insert(Livevals0, Vnlval, Livevals1)
-	; Vnlval = vn_framevar(_) ->
+	(
+		( Vnlval = vn_field(_, _, _)
+		; Vnlval = vn_redoip(_)
+		; Vnlval = vn_framevar(_)
+		)
+	->
 		map__set(FlushEntry0, Vnlval, Vn, FlushEntry1),
 		set__insert(Livevals0, Vnlval, Livevals1)
 	;

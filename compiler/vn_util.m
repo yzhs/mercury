@@ -19,7 +19,7 @@
 
 :- implementation.
 
-:- import_module string, require, std_util, map.
+:- import_module opt_util, string, require, std_util, map.
 
 %-----------------------------------------------------------------------------%
 %-----------------------------------------------------------------------------%
@@ -78,11 +78,6 @@ vn__convert_to_vnlval_and_insert([Lval | Lvals], Liveset0, Liveset) :-
 
 :- pred vn__is_const_expr(vn, bool, vn_tables).
 :- mode vn__is_const_expr(in, out, in) is det.
-
-	% Find out what rvals, if any, are needed to access an lval.
-
-:- pred vn__lval_access_rval(lval, list(rval)).
-:- mode vn__lval_access_rval(in, out) is det.
 
 	% Find out what vns, if any, are needed to access a vnlval.
 
@@ -364,20 +359,6 @@ vn__no_access_vnlval_to_lval(vn_sp,		yes(sp)).
 vn__no_access_vnlval_to_lval(vn_field(_, _, _), no).
 vn__no_access_vnlval_to_lval(vn_temp(N),	yes(temp(N))).
 
-vn__lval_access_rval(reg(_), []).
-vn__lval_access_rval(stackvar(_), []).
-vn__lval_access_rval(framevar(_), []).
-vn__lval_access_rval(succip, []).
-vn__lval_access_rval(maxfr, []).
-vn__lval_access_rval(curfr, []).
-vn__lval_access_rval(redoip(Rval), [Rval]).
-vn__lval_access_rval(hp, []).
-vn__lval_access_rval(sp, []).
-vn__lval_access_rval(field(_, Rval1, Rval2), [Rval1, Rval2]).
-vn__lval_access_rval(temp(_), []).
-vn__lval_access_rval(lvar(_), _) :-
-	error("lvar detected in value_number").
-
 /* one of these preds should be eliminated XXX */
 vn__vnlval_access_vns(vn_reg(_), []).
 vn__vnlval_access_vns(vn_stackvar(_), []).
@@ -438,7 +419,7 @@ vn__is_const_expr(Vn, IsConst, Vn_tables) :-
 vn__find_lvals_in_rval(Rval, Lvals) :-
 	(
 		Rval = lval(Lval),
-		vn__lval_access_rval(Lval, Rvals),
+		opt_util__lval_access_rvals(Lval, Rvals),
 		vn__find_lvals_in_rvals(Rvals, Lvals1),
 		Lvals = [Lval | Lvals1]
 	;
