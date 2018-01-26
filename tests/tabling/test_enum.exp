@@ -1,6 +1,0 @@
-test_exec 110
-start_cond_initial 100: 111
-start_cond_initial 100: 111
-test_exec 220
-start_cond_ord 200: 221
-start_cond_ord 200: 221

@@ -1,1 +1,0 @@
-MCFLAGS-purity_opt = --local-constraint-propagation --no-fully-strict

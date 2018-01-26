@@ -1,6 +1,0 @@
-.nocopyright
-.cvsignore
-.mgnuc_copts
-.mgnuc_opts
-Mercury.options
-SLICE_FLAGS.in

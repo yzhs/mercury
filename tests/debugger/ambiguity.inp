@@ -1,4 +1,0 @@
-echo on
-register --quiet
-ambiguity ambiguity
-continue

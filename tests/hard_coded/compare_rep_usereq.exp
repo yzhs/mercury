@@ -1,8 +1,0 @@
-aa : foo
-aa : foo
-Result = '='.
-
-aa : foo
-bb : foo
-Result = '<'.
-

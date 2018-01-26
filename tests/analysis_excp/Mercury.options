@@ -1,1 +1,0 @@
-MCFLAGS = --intermodule-analysis --analyse-exceptions

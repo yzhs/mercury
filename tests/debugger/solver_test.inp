@@ -1,4 +1,0 @@
-echo on
-register --quiet
-procedures solver_test
-quit -y

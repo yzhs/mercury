@@ -1,9 +1,0 @@
-echo on
-context none
-register --quiet
-break int.+/2-0
-continue
-print 1
-print 2
-continue
-continue -n

@@ -1,3 +1,0 @@
-unsatisfiable_super.m:019: In clause for predicate `test'/3:
-unsatisfiable_super.m:019:   unsatisfiable typeclass constraint:
-unsatisfiable_super.m:019:   `unsatisfiable_super.foo(B, int)'.

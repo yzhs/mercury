@@ -1,2 +1,0 @@
-MCFLAGS = --intermodule-analysis
-MCFLAGS += --grade none.mmsc --analyse-mm-tabling

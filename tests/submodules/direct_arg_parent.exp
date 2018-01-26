@@ -1,2 +1,0 @@
-not_possible(foo(1, 1))
-forced(foo(1, 2))

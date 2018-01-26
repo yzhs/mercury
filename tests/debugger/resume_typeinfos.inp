@@ -1,8 +1,0 @@
-echo on
-context none
-goto 4
-print *
-goto 6
-finish
-print *
-continue

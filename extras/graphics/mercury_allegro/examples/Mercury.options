@@ -1,6 +1,0 @@
-TOP = ..
-include $(TOP)/Mercury.options
-
-MAIN_TARGET = exdata exhello exjoy exmouse exscroll exspline exsprite extimer
-MCFLAGS += --search-lib-files-dir $(TOP) -R $(TOP)
-EXTRA_LIBRARIES = mercury_allegro

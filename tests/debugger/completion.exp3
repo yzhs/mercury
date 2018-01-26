@@ -1,2 +1,0 @@
-Mercury runtime: `--force-readline' is specified in MERCURY_OPTIONS
-but readline() is not available.

@@ -1,9 +1,0 @@
-echo on
-context none
-register --quiet
-break p
-continue
-delete *
-finish
-print A
-continue
